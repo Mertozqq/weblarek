@@ -16,11 +16,12 @@ export class Buyer {
     phone?: string;
   } = {};
 
+  get errors(): { paymentType?: string; address?: string; email?: string; phone?: string } {
+    return this.__errors;
+  }
+
   isPaymentValid(): boolean {
-    if (this.__paymentType != "") {
-      return true;
-    }
-    return false;
+      return this.__paymentType != "";
   }
   set paymentType(paymentType: TPayment) {
     this.__paymentType = paymentType;
@@ -30,10 +31,7 @@ export class Buyer {
   }
   
   isAddressValid(): boolean {
-    if (this.__address != "") {
-      return true;
-    }
-    return false;
+      return this.__address != "";
   }
   set address(address: string) {
     this.__address = address;
@@ -43,10 +41,7 @@ export class Buyer {
   }
   
   isEmailValid(): boolean {
-    if (this.__email != "") {
-      return true;
-    }
-    return false;
+      return this.__email != "";
   }
   set email(email: string) {
     this.__email = email;
@@ -56,10 +51,7 @@ export class Buyer {
   }
   
   isPhoneValid(): boolean {
-    if (this.__phone != "") {
-      return true;
-    }
-    return false;
+      return this.__phone != "";
   }
   set phone(phone: string) {
     this.__phone = phone;
@@ -67,7 +59,6 @@ export class Buyer {
       this.__errors['phone'] = "Неправильный номер телефона";
     }
   }
-  
   
   getAllUserData(): IBuyer {
     this.__buyer.address = this.__address;

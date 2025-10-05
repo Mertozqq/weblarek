@@ -178,13 +178,15 @@ Presenter - презентер содержит основную логику п
 `constructor()` - базовый конструктор без параметров.  
 
 Поля класса:  
-`buyer` - поле для хранения всех данных покупателя.  
-`paymentType: TPayment` - поле для хранения вида оплаты, выбранного паользователем.  
-`address: string` - поле для хранения адреса получателя.  
-`email: string` - поле для хранения электронной почты получателя.  
-`phone: string` - поле для хранения номера телефона получателя.  
+`__buyer` - поле для хранения всех данных покупателя.  
+`__paymentType: TPayment` - поле для хранения вида оплаты, выбранного паользователем.  
+`__address: string` - поле для хранения адреса получателя.  
+`__email: string` - поле для хранения электронной почты получателя.  
+`__phone: string` - поле для хранения номера телефона получателя.  
+`__errors: { paymentType?: string; address?: string; email?: string; phone?: string }` - поле для хранения ошибок в виде объекта Если поле невалидно, то в объект добавляется соответствующая пара ключ-значение.  
 
 Методы класса:  
+`get errors(): { paymentType?: string; address?: string; email?: string; phone?: string }` - метод для получение объекта с ошибками. Возвращает объект с ошибками.  
 `set paymentType(paymentType: TPayment): void` - метод для заполнения поля paymentType. В качестве параметра принимает paymentType типа TPayment.  
 `isPaymentTypeValid(): boolean` - метод проверяющий валидность поля paymentType. Возвращает true, если оно валидно, иначе false.  
 `set address(address: string): void` - метод для заполнения поля address. В качестве параметра принимает address типа string.  
