@@ -24,6 +24,7 @@ export class Buyer {
       return this.__paymentType != "";
   }
   set paymentType(paymentType: TPayment) {
+    delete this.__errors['paymentType'];
     this.__paymentType = paymentType;
     if (!this.isPaymentValid()) {
       this.__errors['paymentType'] = "Неправильный способ оплаты";
@@ -34,9 +35,13 @@ export class Buyer {
       return this.__address != "";
   }
   set address(address: string) {
+    delete this.__errors['address'];
     this.__address = address;
     if (!this.isAddressValid()) {
       this.__errors['address'] = "Неправильный адрес";
+    }
+    else {
+      
     }
   }
   
@@ -44,6 +49,7 @@ export class Buyer {
       return this.__email != "";
   }
   set email(email: string) {
+    delete this.__errors['email'];
     this.__email = email;
     if (!this.isEmailValid()) {
       this.__errors['email'] = "Неправильный email";
@@ -54,6 +60,7 @@ export class Buyer {
       return this.__phone != "";
   }
   set phone(phone: string) {
+    delete this.__errors['phone'];
     this.__phone = phone;
     if (!this.isPhoneValid()) {
       this.__errors['phone'] = "Неправильный номер телефона";
@@ -73,5 +80,4 @@ export class Buyer {
     this.__buyer.email = "";
     this.__buyer.payment = "";
   }
-
 }
