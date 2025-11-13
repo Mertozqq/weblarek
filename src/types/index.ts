@@ -6,6 +6,7 @@ export interface IApi {
 }
 
 export type TPayment = "cash" | "online" | "";
+export type CategoryKey = "софт-скил" | "хард-скил" | 'кнопка' | 'дополнительное' | 'другое'
 
 
 export interface IProduct {
@@ -35,4 +36,9 @@ export interface IApiPostRequestObject extends IBuyer, IApiGetResponseObject {
 export interface IApiPostResponseObject {
   id: string;
   total: number;
+}
+
+
+export interface ICardActions {
+  onClick(): void;
 }
