@@ -22,4 +22,11 @@ export class Modal extends Component<IModal> {
     this._modalContent.innerHTML = '';
     this._modalContent.appendChild(content);
   }
+  open() {
+    this.container.classList.add('modal_active');
+  }
+
+  close() {
+    this.container.classList.remove('modal_active');
+  }
 }
