@@ -16,18 +16,11 @@ export class Form<T> extends Component<IForm & T> {
         this._submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.container);
         this._errors = ensureElement('.form__errors', this.container);
 
-        this._submitButton.addEventListener('click', () => {
-            events.emit(`${this.container}:submit`);
+        this.container.addEventListener('submit', (event: Event) => {
+            event.preventDefault();
+            const formName = this.container.getAttribute("name") || "form";
+            this.events.emit(`${formName}:submit`);
         });
-        this.container.addEventListener('input', (event: Event) => {
-          const target = event.target as HTMLInputElement;
-          const field = target.name as keyof T;
-          const value = target.value;
-          this.inputChange(field, value);
-        })
-    }
-    protected inputChange(field: keyof T, value: string) {
-      this.events.emit(`${this.container.getAttribute('name')}:submit`);
     }
     
     set errors(value: string) {
@@ -40,5 +33,5 @@ export class Form<T> extends Component<IForm & T> {
       else
         this._submitButton.disabled = true;
     }
-
+    
 }
