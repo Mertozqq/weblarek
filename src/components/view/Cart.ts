@@ -2,12 +2,12 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
-interface IBasket  {
+interface ICart  {
   productList: HTMLElement[];
   buttonState: boolean;
 }
 
-export class Basket extends Component<IBasket> {
+export class Cart extends Component<ICart> {
   protected _productsList: HTMLElement;
   protected _buyButton: HTMLButtonElement;
   protected _priceElement: HTMLElement;
