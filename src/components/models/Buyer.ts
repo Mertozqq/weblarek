@@ -1,7 +1,9 @@
 import { TPayment, IBuyer } from "../../types";
+import { IEvents } from "../base/Events";
 
 
 export class Buyer {
+  constructor(private events: IEvents) {}
   private __buyer: IBuyer = {payment: "", email: "", phone: "", address: ""};
 
   private __paymentType: TPayment = "";
@@ -29,6 +31,7 @@ export class Buyer {
     if (!this.isPaymentValid()) {
       this.__errors['paymentType'] = "Неправильный способ оплаты";
     }
+    this.emitChange();
   }
   
   isAddressValid(): boolean {
@@ -40,9 +43,7 @@ export class Buyer {
     if (!this.isAddressValid()) {
       this.__errors['address'] = "Неправильный адрес";
     }
-    else {
-      
-    }
+    this.emitChange();
   }
   
   isEmailValid(): boolean {
@@ -54,6 +55,7 @@ export class Buyer {
     if (!this.isEmailValid()) {
       this.__errors['email'] = "Неправильный email";
     }
+    this.emitChange();
   }
   
   isPhoneValid(): boolean {
@@ -65,6 +67,7 @@ export class Buyer {
     if (!this.isPhoneValid()) {
       this.__errors['phone'] = "Неправильный номер телефона";
     }
+    this.emitChange();
   }
   
   getAllUserData(): IBuyer {
@@ -75,9 +78,17 @@ export class Buyer {
     return this.__buyer;
   }
   clearAllUserData(): void {
-    this.__buyer.address = "";
-    this.__buyer.phone = "";
-    this.__buyer.email = "";
-    this.__buyer.payment = "";
+    this.__paymentType = "";
+    this.__address = "";
+    this.__email = "";
+    this.__phone = "";
+    this.__errors = {};
+    this.emitChange();
+  }
+  private emitChange() {
+    this.events.emit('buyer:changed', {
+      buyer: this.getAllUserData(),
+      errors: this.errors
+    });
   }
 }
