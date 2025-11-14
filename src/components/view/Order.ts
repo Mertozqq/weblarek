@@ -18,9 +18,7 @@ export class Order extends Form<IOrder> {
 
       this._paymentType.forEach((button) => {
       button.addEventListener('click', () => {
-        this.events.emit('order:payment:clicked', {
-          paymentType: button.name,
-        });
+        this.events.emit('order:payment:clicked', { paymentType: button.name });
       });
     });
       this.container.addEventListener('input', (event: Event) => {
