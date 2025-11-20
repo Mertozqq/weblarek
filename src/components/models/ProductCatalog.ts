@@ -9,11 +9,11 @@ export class ProductCatalog {
 
   set products(array: IProduct[]) {
     this.__products = array;
-    this.emitChange();
+    this.emitChangeCatalog();
   }
   set currentProduct(product: IProduct) {
     this.__currentProduct = product;
-    this.emitChange();
+    this.emitChangeCurrentProduct();
   }
   get products(): IProduct[] {
     return this.__products;
@@ -24,8 +24,14 @@ export class ProductCatalog {
   getProductById(id: string): IProduct | null {
     return this.__products.find(product => product.id === id) || null;
   }
-  private emitChange() {
+  private emitChangeCatalog() {
     this.events.emit('catalog:changed', {
+      products: this.products,
+      currentProduct: this.currentProduct
+    });
+  }
+  private emitChangeCurrentProduct() {
+    this.events.emit('currentProduct:changed', {
       products: this.products,
       currentProduct: this.currentProduct
     });

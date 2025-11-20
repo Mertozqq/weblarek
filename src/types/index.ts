@@ -30,7 +30,11 @@ export interface IApiGetResponseObject {
   items: IProduct[];
 }
 
-export interface IApiPostRequestObject extends IBuyer, IApiGetResponseObject {
+export interface IApiPostRequestObject
+  extends Omit<IBuyer, "items">
+{
+  items: string[];
+  total: number;
 }
 
 export interface IApiPostResponseObject {

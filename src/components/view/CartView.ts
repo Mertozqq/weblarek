@@ -2,20 +2,20 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
-interface ICart  {
+interface ICartView  {
   productList: HTMLElement[];
   buttonState: boolean;
 }
 
-export class Cart extends Component<ICart> {
+export class CartView extends Component<ICartView> {
   protected _productsList: HTMLElement;
   protected _buyButton: HTMLButtonElement;
   protected _priceElement: HTMLElement;
-  constructor(container: HTMLElement, protected events: IEvents) {
+  constructor(protected events: IEvents, container: HTMLElement) {
     super(container);
     this._buyButton = ensureElement<HTMLButtonElement>('.basket__button', this.container);
-    this._productsList = ensureElement<HTMLElement>('basket__list', this.container);
-    this._priceElement = ensureElement('basket__price', this.container);
+    this._productsList = ensureElement<HTMLElement>('.basket__list', this.container);
+    this._priceElement = ensureElement('.basket__price', this.container);
 
     this._buyButton.addEventListener('click', () => {
       this.events.emit('purchase:open')
@@ -32,4 +32,7 @@ export class Cart extends Component<ICart> {
       else
         this._buyButton.disabled = true;
     }
+  set price(currentPrice: number) {
+    this._priceElement.textContent = `${currentPrice} синапсов`
+  }
 }

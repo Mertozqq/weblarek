@@ -28,11 +28,12 @@ export class Order extends Form<IOrder> {
         }
       })
     }
-    set paymentType(method: string) {
-    this._paymentType.forEach((btn) => {
-      const isActive = btn.name === method;
-      btn.classList.toggle('button_alt-active', isActive);
-      btn.ariaPressed = String(isActive);
+  set paymentType(method: string) {
+  this._paymentType.forEach((btn) => {
+    const isActive = btn.name === method;
+    console.log(isActive)
+    btn.classList.toggle('button_alt-active', isActive);
+    btn.ariaPressed = String(isActive);
     });
   }
   set address(value: string) {

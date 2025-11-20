@@ -41,7 +41,7 @@ export class Buyer {
     delete this.__errors['address'];
     this.__address = address;
     if (!this.isAddressValid()) {
-      this.__errors['address'] = "Неправильный адрес";
+      this.__errors['address'] = "Необходимо указать адрес";
     }
     this.emitChange();
   }

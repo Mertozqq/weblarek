@@ -3,7 +3,7 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
-export type TCard = Pick<IProduct, "title" | "price">;
+export type TCard = Pick<IProduct, "title" | "price" | "id">;
 
 export class Card<T> extends Component<TCard & T> {
   protected _cardTitle: HTMLElement;
@@ -16,10 +16,14 @@ export class Card<T> extends Component<TCard & T> {
 
 
   }
-  set cardTitle(value: string) {
+  set title(value: string) {
     this._cardTitle.textContent = value;
   }
-  set cardPrice(value: number) {
+  set price(value: number | null) {
+    if (value != null)
     this._cardPrice.textContent = `${value.toString()} синапсов`
+    else {
+      this._cardPrice.textContent = `Бесценно`;
+    }
   }
 }

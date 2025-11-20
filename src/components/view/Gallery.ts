@@ -7,14 +7,15 @@ interface IGallery {
 }
 
 export class Gallery extends Component<IGallery> {
-  _gallery: HTMLElement;
-  _galleryItems: HTMLElement[] = [];
+  protected _galleryItems: HTMLElement[] = [];
+
   constructor(protected events: IEvents, container: HTMLElement) {
     super(container);
-    this._gallery = ensureElement('.gallery', this.container);
-
   }
-  set galleryItems(products: HTMLElement[]) {
-    this._galleryItems = products;
+
+  set galleryItems(items: HTMLElement[]) {
+    items.forEach(element => {
+      this.container.appendChild(element);
+    });
   }
 }

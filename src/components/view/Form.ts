@@ -33,5 +33,4 @@ export class Form<T> extends Component<IForm & T> {
       else
         this._submitButton.disabled = true;
     }
-    
 }

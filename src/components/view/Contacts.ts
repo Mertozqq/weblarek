@@ -10,7 +10,7 @@
   export class Contacts extends Form<IContacts> {
       protected _email: HTMLInputElement;
       protected _phone: HTMLInputElement;
-      constructor(container: HTMLFormElement, events: IEvents) {
+      constructor( events: IEvents, container: HTMLFormElement) {
         super(container, events);
         
         this._email = ensureElement<HTMLInputElement>('.form__input[name="email"]', this.container);
@@ -32,5 +32,4 @@
     set phone(value: string) {
       this._phone.value = value;
     }
-
   }
