@@ -21,5 +21,4 @@ export class Success extends Component<TSuccess> {
   set totalPrice(value: number) {
     this._orderSuccessDescription.textContent = `Списано ${value.toString()} синапсов`;
   }
-
 }

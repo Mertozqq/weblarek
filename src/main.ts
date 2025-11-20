@@ -249,5 +249,3 @@ events.on('success:order', () => {
 commServ.getProducts().then((prods) => {
   catalog.products = prods
 })
-
-
