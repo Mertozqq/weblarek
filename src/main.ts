@@ -116,15 +116,18 @@ events.on('card:select', (item: IProduct) => {
   modalWindow.modalContent = selectedCard.render(item);
   modalWindow.render({modalContent: selectedCard.render(item)});
   selectedCard.buyButton = cart.isProductInCart(item.id);
+  if (item.price == null) {
+    selectedCard.buyButtonDisabled = true;
+  }
   modalWindow.open();
 })
 
 events.on('currentProduct:changed', (item: IProduct) => {
   console.log('currentProduct:changed')
   selectedCard.buyButton = cart.isProductInCart(item.id);
-  const a: HTMLElement = selectedCard.render(item);
-  modalWindow.modalContent = selectedCard.render(item);
-  modalWindow.render({ modalContent: a});
+  const selectedCardHTML: HTMLElement = selectedCard.render(item);
+  modalWindow.modalContent = selectedCardHTML;
+  modalWindow.render({ modalContent: selectedCardHTML});
 })
 
 events.on('card:addDelete', (item: IProduct) => {

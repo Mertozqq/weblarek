@@ -53,10 +53,9 @@ export class CardFullDescribtion extends Card<TCardFullDescribtion> {
         this._buyButton.textContent = "Удалить из корзины";
         else
           this._buyButton.textContent = "В корзину";
-    
-    
-    if (this._cardPrice.textContent === "Бесценно") {
-      console.log(123)
+  }
+  set buyButtonDisabled(isNull: boolean) {
+    if (isNull) {
       this._buyButton.setAttribute('disabled', 'true')
       this._buyButton.textContent = "Недоступно";
     }
