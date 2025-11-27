@@ -1,4 +1,4 @@
-import { IApi, IApiPostRequestObject, IApiGetResponseObject, IProduct } from "../../types";
+import { IApi, IApiPostRequestObject, IApiGetResponseObject, IProduct, IApiPostResponseObject } from "../../types";
 
 export class CommunicationService {
   private api: IApi;
@@ -11,7 +11,7 @@ export class CommunicationService {
     const prodObj: IApiGetResponseObject = await this.api.get("/product");
     return prodObj.items;
   }
-  makeOrder(data: IApiPostRequestObject) {
-    this.api.post("/order", data);
+  makeOrder(data: IApiPostRequestObject): Promise<IApiPostResponseObject> {
+    return this.api.post("/order", data);
   }
 }

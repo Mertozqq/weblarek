@@ -22,10 +22,9 @@ export class CartView extends Component<ICartView> {
     })
   }
   set productList(elements: HTMLElement[]) {
-    elements.forEach(element => {
-      this._productsList.append(element);
-    });
+    this._productsList.replaceChildren(...elements);
   }
+  
   set buttonState(isValid: boolean) {
       if (isValid)
       this._buyButton.removeAttribute('disabled');

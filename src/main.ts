@@ -44,42 +44,19 @@ const succsessTemplate = ensureElement<HTMLTemplateElement>('#success')
 const header = new Header(events, headerHTML);
 const gallery = new Gallery(events, galleryHTML);
 const modalWindow = new Modal(events, ModalTemplate);
-
-let cartView: CartView;
+const cartView = new CartView(events, cloneTemplate(cartTemplate));
 let selectedCard: CardFullDescribtion;
-let order: Order;
-let contacts: Contacts;
+const order = new Order(cloneTemplate(orderTemplate), events);
+const contacts = new Contacts(events, cloneTemplate(contactsTemplate));
 
-function rebuildCart() {
-  const productList = cart.productsToBuy;
-  let isValid;
-  
-
-  const itemCards = productList.map((item, i) => {
-    console.log(cloneTemplate(CardFromCartTemplate))
-    const card = new CardFromCart(cloneTemplate(CardFromCartTemplate), {
-      onClick: () => events.emit(`card:delete`, item),
-    });
-    card.itemIndex = i + 1;
-    
-    return card.render(item);
-  })
-  cartView = new CartView(events, cloneTemplate(cartTemplate));
-  if (cart.countCartItems() === 0) {
-    isValid = false;
-  }
-  else {
-    isValid = true;
-  }
-  cartView.price = cart.countFullPrice();
-  modalWindow.modalContent = cartView.render({ productList: itemCards, buttonState: isValid });
-}
-
-events.on('modal:close', () => {
-  console.log('modal:close')
-  modalWindow.close();
+// models
+events.on('currentProduct:changed', (item: IProduct) => {
+  console.log('currentProduct:changed')
+  selectedCard.buyButton = cart.isProductInCart(item.id);
+  const selectedCardHTML: HTMLElement = selectedCard.render(item);
+  modalWindow.modalContent = selectedCardHTML;
+  modalWindow.render({ modalContent: selectedCardHTML});
 })
-
 events.on('catalog:changed', () => {
   console.log('catalog:changed')
   const itemCards = catalog.products.map((item) => {
@@ -91,27 +68,58 @@ events.on('catalog:changed', () => {
   gallery.galleryItems = itemCards;
   gallery.render( { galleryItems: itemCards })
 })
+events.on('cart:changed', (data: {
+      products: IProduct[],
+      countOfElements: number,
+      price: string,
+    }) => {
+  cartView.render()
+})
+// вспомогательные функции
+function rebuildCart() {
+  console.log("rebuildCart");
+  const productList = cart.productsToBuy;
+  
+  const itemCards = productList.map((item, i) => {
+    console.log(cloneTemplate(CardFromCartTemplate))
+    const card = new CardFromCart(cloneTemplate(CardFromCartTemplate), {
+      onClick: () => events.emit(`card:delete`, item),
+    });
+    card.itemIndex = i + 1;
+    return card.render(item);
+  })
+  const isValid = cart.countCartItems() > 0;
 
-// events.on('buyer:changed', (currentUser: {
-//       buyer: IBuyer,
-//       errors: { paymentType?: string; address?: string; email?: string; phone?: string },
-//   }) => {
-//     if (Object.keys(currentUser.errors).length === 0) {
-//       if (order && !contacts) {
-//         order.buttonState = true;
-//       }
-//       else {
-//         contacts.buttonState = true;
-//       }
-//     }
-// })
+  cartView.price = cart.countFullPrice();
+  
+  modalWindow.modalContent = cartView.render({ productList: itemCards, buttonState: isValid });
+  
+}
+
+events.on('modal:close', () => {
+  console.log('modal:close')
+  modalWindow.close();
+})
+
+events.on('buyer:changed', (currentUser: {
+      buyer: IBuyer,
+      errors: { paymentType?: string; address?: string; email?: string; phone?: string },
+  }) => {
+    if (Object.keys(currentUser.errors).length === 0) {
+      if (order && !contacts) {
+        order.buttonState = true;
+      }
+      else {
+        contacts.buttonState = true;
+      }
+    }
+})
 
 events.on('card:select', (item: IProduct) => {
   console.log('card:select')
   selectedCard = new CardFullDescribtion(cloneTemplate(CardFullDescribtionTemplate), events, {
     onClick: () => events.emit('card:addDelete', item)
   })
-  
   catalog.currentProduct = selectedCard; // вызывается currentProduct:changed
   modalWindow.modalContent = selectedCard.render(item);
   modalWindow.render({modalContent: selectedCard.render(item)});
@@ -122,13 +130,6 @@ events.on('card:select', (item: IProduct) => {
   modalWindow.open();
 })
 
-events.on('currentProduct:changed', (item: IProduct) => {
-  console.log('currentProduct:changed')
-  selectedCard.buyButton = cart.isProductInCart(item.id);
-  const selectedCardHTML: HTMLElement = selectedCard.render(item);
-  modalWindow.modalContent = selectedCardHTML;
-  modalWindow.render({ modalContent: selectedCardHTML});
-})
 
 events.on('card:addDelete', (item: IProduct) => {
   console.log('card:addDelete')
@@ -154,15 +155,16 @@ events.on('basket:open', () => {
 events.on('card:delete', (item: IProduct) => {
   console.log('card:delete');
   cart.deleteProductToBuy(item);
+  
   rebuildCart();
   header.basketCounter = cart.countCartItems();
 })
 
 events.on('purchase:open', () => {
   console.log('purchase:open');
-  order = new Order(cloneTemplate(orderTemplate), events);
   buyer.paymentType = '';
   buyer.address = '';
+  order.buttonState = false;
   modalWindow.modalContent = order.render();
 })
 
@@ -171,12 +173,7 @@ events.on('order:payment:clicked', (paymentType: {paymentType: TPayment}) => {
   buyer.paymentType = paymentType.paymentType; // Чтобы сохранились данные
   order.paymentType = paymentType.paymentType; // Чтобы поменялась кнопка
   order.errors = buyer.errors.paymentType || buyer.errors.address || "";
-  if (Object.keys(buyer.errors).length == 0) {
-    order.buttonState = true;
-  }
-  else {
-    order.buttonState = false;
-  }
+  order.buttonState = Object.keys(buyer.errors).length == 0
 })
 
 events.on('order:address:changed', (address: {address: string}) => {
@@ -184,18 +181,13 @@ events.on('order:address:changed', (address: {address: string}) => {
   order.address = address.address;
   buyer.address = address.address;
   order.errors = buyer.errors.paymentType || buyer.errors.address || "";
-  if (Object.keys(buyer.errors).length == 0) {
-    order.buttonState = true;
-  }
-  else {
-    order.buttonState = false;
-  }
+  order.buttonState = Object.keys(buyer.errors).length == 0;
 })
 events.on('order:submit', () => {
   console.log('order:submit');
-  contacts = new Contacts(events, cloneTemplate(contactsTemplate));
   buyer.phone = '';
   buyer.email = '';
+  contacts.buttonState = false;
   modalWindow.modalContent = contacts.render();
 })
 events.on('contacts:email:changed', (email: { email: string }) => {
@@ -203,12 +195,7 @@ events.on('contacts:email:changed', (email: { email: string }) => {
   contacts.email = email.email;
   buyer.email = email.email;
   contacts.errors = buyer.errors.email || buyer.errors.phone || "";
-  if (Object.keys(buyer.errors).length == 0) {
-    contacts.buttonState = true;
-  }
-  else {
-    contacts.buttonState = false;
-  }
+  contacts.buttonState = Object.keys(buyer.errors).length == 0;
 })
 
 events.on('contacts:phone:changed', (phone: { phone: string }) => {
@@ -216,12 +203,7 @@ events.on('contacts:phone:changed', (phone: { phone: string }) => {
   contacts.phone = phone.phone;
   buyer.phone = phone.phone;
   contacts.errors = buyer.errors.email || buyer.errors.phone || "";
-  if (Object.keys(buyer.errors).length == 0) {
-    contacts.buttonState = true;
-  }
-  else {
-    contacts.buttonState = false;
-  }
+  contacts.buttonState = Object.keys(buyer.errors).length == 0;
 })
 
 events.on('contacts:submit', () => {
@@ -237,9 +219,14 @@ events.on('contacts:submit', () => {
   items: itemsIDs,
   }
   console.log(data);
-  commServ.makeOrder(data);
-  modalWindow.modalContent = success.render();
-  success.totalPrice = cart.countFullPrice();
+  commServ.makeOrder(data)
+  .then((response) => {
+    modalWindow.modalContent = success.render();
+    success.totalPrice = response.total;
+  })
+  .catch((err) => {
+    throw new Error(err);
+  })
 })
 
 events.on('success:order', () => {
