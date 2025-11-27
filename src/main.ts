@@ -45,7 +45,13 @@ const header = new Header(events, headerHTML);
 const gallery = new Gallery(events, galleryHTML);
 const modalWindow = new Modal(events, ModalTemplate);
 const cartView = new CartView(events, cloneTemplate(cartTemplate));
-let selectedCard: CardFullDescribtion;
+const selectedCard= new CardFullDescribtion(cloneTemplate(CardFullDescribtionTemplate), events, {
+    onClick: () => {
+      if (catalog.currentProduct) {
+        events.emit('card:addDelete', catalog.currentProduct);
+      }
+    }
+  });
 const order = new Order(cloneTemplate(orderTemplate), events);
 const contacts = new Contacts(events, cloneTemplate(contactsTemplate));
 
@@ -101,32 +107,32 @@ events.on('modal:close', () => {
   modalWindow.close();
 })
 
-events.on('buyer:changed', (currentUser: {
-      buyer: IBuyer,
-      errors: { paymentType?: string; address?: string; email?: string; phone?: string },
-  }) => {
-    if (Object.keys(currentUser.errors).length === 0) {
-      if (order && !contacts) {
-        order.buttonState = true;
-      }
-      else {
-        contacts.buttonState = true;
-      }
-    }
-})
+// events.on('buyer:changed', (currentUser: {
+//       buyer: IBuyer,
+//       errors: { paymentType?: string; address?: string; email?: string; phone?: string },
+//   }) => {
+//     if (Object.keys(currentUser.errors).length === 0) {
+//       if (order && !contacts) {
+//         order.buttonState = true;
+//       }
+//       else {
+//         contacts.buttonState = true;
+//       }
+//     }
+// })
 
 events.on('card:select', (item: IProduct) => {
   console.log('card:select')
-  selectedCard = new CardFullDescribtion(cloneTemplate(CardFullDescribtionTemplate), events, {
-    onClick: () => events.emit('card:addDelete', item)
-  })
-  catalog.currentProduct = selectedCard; // вызывается currentProduct:changed
-  modalWindow.modalContent = selectedCard.render(item);
-  modalWindow.render({modalContent: selectedCard.render(item)});
+
+  catalog.currentProduct = item;
   selectedCard.buyButton = cart.isProductInCart(item.id);
+
   if (item.price == null) {
     selectedCard.buyButtonDisabled = true;
   }
+  
+  modalWindow.modalContent = selectedCard.render(item);
+  modalWindow.render({modalContent: selectedCard.render(item)});
   modalWindow.open();
 })
 
